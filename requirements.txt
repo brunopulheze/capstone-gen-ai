@@ -1,0 +1,33 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+langchain==1.2.15
+langchain-groq==1.1.2
+langchain-core==1.2.28
+python-dotenv==1.0.1
+pydantic>=2.11.0,<3.0.0
+
+# RAG pipeline
+langchain-community==0.4.1
+langchain-chroma==1.1.0
+langchain-huggingface==1.2.1
+chromadb==1.5.5
+
+# File upload & data analysis
+python-multipart==0.0.20
+pandas==2.2.3
+openpyxl==3.1.5
+xlrd==2.0.1
+numpy==2.4.3
+
+# HTTP client & HTML parsing
+httpx==0.28.1
+beautifulsoup4==4.14.3
+
+# Web search (UX Audit Reflexion loop)
+tavily-python==0.7.23
+
+# Speech-to-text (multimodal input — new for capstone)
+groq>=0.30.0,<1.0.0
+
+# Streamlit GUI
+streamlit==1.45.1
