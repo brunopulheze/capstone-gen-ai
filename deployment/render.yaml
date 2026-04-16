@@ -1,0 +1,36 @@
+services:
+  # ── FastAPI backend ──────────────────────────────────────
+  - type: web
+    name: brixoai-capstone-api
+    runtime: docker
+    dockerfilePath: deployment/Dockerfile
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+      - key: LANGCHAIN_TRACING_V2
+        value: "true"
+      - key: LANGCHAIN_API_KEY
+        sync: false
+      - key: LANGCHAIN_PROJECT
+        value: brixoai-capstone
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # ── Streamlit frontend ───────────────────────────────────
+  - type: web
+    name: brixoai-capstone-ui
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app/streamlit_app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: API_BASE
+        fromService:
+          name: brixoai-capstone-api
+          type: web
+          property: host

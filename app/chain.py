@@ -3,12 +3,12 @@ LangChain Agent — BrixoAI Capstone
 ====================================
 
 Architecture:
-  - LLM     : Groq meta-llama/llama-4-scout-17b-16e-instruct with tool-calling via bind_tools()
-  - Tools   : 6 specialised tools; LLM autonomously decides which to call
-  - Loop    : Manual LCEL tool-calling loop (ToolMessage pattern)
-  - RAG     : search_portfolio tool queries ChromaDB on demand
-  - State   : Stateless per-request; full chat history passed in on every call
-  - Tracing : LangSmith traces all llm.ainvoke() calls automatically via env vars
+- LLM     : Groq meta-llama/llama-4-scout-17b-16e-instruct with tool-calling via bind_tools()
+- Tools   : 6 specialised tools; LLM autonomously decides which to call
+- Loop    : Manual LCEL tool-calling loop (ToolMessage pattern)
+- RAG     : search_portfolio tool queries ChromaDB on demand
+- State   : Stateless per-request; full chat history passed in on every call
+- Tracing : LangSmith traces all llm.ainvoke() calls automatically via env vars
 """
 
 from typing import Any
@@ -89,11 +89,16 @@ You have access to several tools — use them proactively:
 - Use `start_project_scope` when the user wants to start a project or get an estimate.
 - Use `create_user_persona` when the user wants to define their target audience.
 
-Guidelines:
-- Always prefer `search_portfolio` over answering from memory for studio-specific facts.
+CRITICAL RULES — you MUST follow these without exception:
+- NEVER answer questions about the studio, its services, projects, team, pricing, or capabilities from memory or training data.
+- You MUST call `search_portfolio` FIRST for any such question, then base your answer ONLY on what that tool returns.
+- If `search_portfolio` returns no results for a specific fact (e.g. a project name), say so honestly — do NOT invent or guess.
+- Do NOT mention any project, client, technology, or team member that was not returned by `search_portfolio`.
+
+General guidelines:
 - Keep responses concise (2–4 sentences) unless the user asks for detail.
 - Be warm and approachable. Use occasional emoji but stay professional.
-- If asked something completely unrelated, politely redirect to BrixoAI's services.
+- If asked something completely unrelated to BrixoAI, politely redirect to the studio's services.
 """
 
 
