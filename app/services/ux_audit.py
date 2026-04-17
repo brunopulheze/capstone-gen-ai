@@ -145,7 +145,7 @@ async def _refine_ux_audit(initial_audit: str) -> str:
 # ── URL scraping helper ───────────────────────────────────────────────────────
 
 def _scrape_url(url: str) -> str:
-    """Fetch a URL and return clean text content."""
+    """Fetch a URL and return structured HTML elements + CSS styles relevant to UX analysis."""
     response = httpx.get(
         url,
         headers={"User-Agent": "Mozilla/5.0 (compatible; BrixoAI/1.0)"},
@@ -154,9 +154,64 @@ def _scrape_url(url: str) -> str:
     )
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
-    for tag in soup(["script", "style", "noscript", "svg", "head", "nav", "footer", "aside", "form", "meta", "link"]):
+
+    # ── CSS styles ────────────────────────────────────────────────────────────
+    css_blocks = []
+    for style_tag in soup.find_all("style"):
+        css_text = style_tag.get_text(strip=True)
+        if css_text:
+            css_blocks.append(css_text[:1000])
+
+    inline_styles = []
+    for el in soup.find_all(style=True):
+        inline_styles.append(f'<{el.name} style="{el["style"]}">')
+
+    # Remove script tags only
+    for tag in soup(["script"]):
         tag.decompose()
-    return " ".join(soup.get_text(separator=" ").split())[:_MAX_SCRAPE_CHARS]
+
+    elements = []
+
+    # Page title & meta description
+    if soup.title:
+        elements.append(f"<title>{soup.title.string}</title>")
+    meta_desc = soup.find("meta", attrs={"name": "description"})
+    if meta_desc:
+        elements.append(f'<meta name="description" content="{meta_desc.get("content", "")}">')
+
+    # Heading hierarchy (h1–h6)
+    for tag in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"]):
+        elements.append(str(tag))
+
+    # Navigation blocks
+    for nav in soup.find_all("nav"):
+        elements.append(str(nav))
+
+    # Anchor links
+    for a in soup.find_all("a", href=True):
+        elements.append(str(a))
+
+    # Buttons and input controls
+    for el in soup.find_all(["button", "input", "select", "textarea"]):
+        elements.append(str(el))
+
+    # Forms
+    for form in soup.find_all("form"):
+        elements.append(str(form))
+
+    # Images (alt text matters for accessibility)
+    for img in soup.find_all("img"):
+        elements.append(str(img))
+
+    # ── Assemble output ───────────────────────────────────────────────────────
+    sections = []
+    if css_blocks:
+        sections.append("=== STYLESHEET CSS ===\n" + "\n".join(css_blocks))
+    if inline_styles:
+        sections.append("=== INLINE STYLES ===\n" + "\n".join(inline_styles))
+    sections.append("=== HTML ELEMENTS ===\n" + "\n".join(elements))
+
+    return "\n\n".join(sections)[:_MAX_SCRAPE_CHARS]
 
 
 # ── URL audit endpoint ────────────────────────────────────────────────────────

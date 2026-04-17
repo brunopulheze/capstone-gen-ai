@@ -9,7 +9,7 @@ The UX Audit service performs a structured accessibility and UX review via two i
 ## Input Modes
 
 ### 1. URL Mode
-The service scrapes the public page using `httpx` + `BeautifulSoup`, extracts meaningful text content (up to 12,000 characters), and passes it to the LLM for analysis.
+The service scrapes the public page using `httpx` + `BeautifulSoup`, extracting structured HTML elements (headings, navigation, links, buttons, forms, images) and CSS styles (stylesheet rules + inline styles), up to 12,000 characters, and passes them to the LLM for analysis.
 
 ### 2. Image Mode (Multimodal)
 An uploaded screenshot is base64-encoded and passed directly to Groq's vision-capable model (`llama-4-scout-17b-16e-instruct`) for visual UX review.
@@ -19,7 +19,7 @@ An uploaded screenshot is base64-encoded and passed directly to Groq's vision-ca
 ```
 Input: URL or screenshot
      │
-     ├── URL ──► httpx scrape ──► BeautifulSoup text extraction (max 12k chars)
+     ├── URL ──► httpx scrape ──► BeautifulSoup HTML element + CSS extraction (max 12k chars)
      │
      └── Image ──► base64 encode ──► Groq vision LLM
      │
