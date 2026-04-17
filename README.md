@@ -36,7 +36,6 @@ digital design studio.
 │  /ux-audit/*    → services/ux_audit.py                      │
 │  /scope-project → services/scope_project.py                 │
 │  /persona       → services/user_persona.py                  │
-│  /generate-*    → services/brief.py                         │
 └───────────────────────┬─────────────────────────────────────┘
                         │
              ┌──────────┼──────────┐
@@ -117,8 +116,7 @@ capstone-gen-ai/
 │       ├── data_insights.py  # CSV/Excel analysis + Q&A
 │       ├── ux_audit.py       # URL & image UX audit (Reflexion)
 │       ├── scope_project.py  # Project scope + palette generation
-│       ├── user_persona.py   # User persona generation
-│       └── brief.py          # Brief & proposal generation
+│       └── user_persona.py   # User persona generation
 ├── notebooks/
 │   ├── 01_rag_pipeline.ipynb       # RAG: load → split → embed → index → query
 │   ├── 02_langchain_agent.ipynb    # Tool-calling agent & agentic loop
@@ -187,8 +185,6 @@ Cells import directly from the `app/` source code where possible.
 | `POST` | `/scope-project` | Scope a project |
 | `POST` | `/regenerate-palette` | Regenerate brand palette |
 | `POST` | `/persona` | Generate user persona |
-| `POST` | `/generate-brief` | Generate project brief |
-| `POST` | `/generate-proposal` | Generate client proposal |
 
 Full interactive docs at `/docs` once the server is running.
 
